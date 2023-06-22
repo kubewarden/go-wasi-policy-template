@@ -1,5 +1,6 @@
 > **WARNING:** this is not the recommended way to write Kubewarden
-> policies using Go. Please read TODO for more information.
+> policies using Go. Please read [this](https://docs.kubewarden.io/writing-policies/wasi)
+> section of the Kubewarden documentation for more information.
 
 This is the template of a plain WASI policy written using Go. The policy is
 then compiled with the official Go compiler.

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"testing"
 
@@ -14,7 +15,7 @@ import (
 
 func TestValidateAdmissionReview(t *testing.T) {
 	cases := []struct {
-		desc                 string
+		name                 string
 		currentAnnotations   map[string]string
 		requiredAnnotations  map[string]string
 		forbiddenAnnotations mapset.Set[string]
@@ -81,29 +82,33 @@ func TestValidateAdmissionReview(t *testing.T) {
 		}
 
 		for objType, objJSON := range jsonObjects {
-			admissionRequest := admissionv1.AdmissionRequest{
-				Object: runtime.RawExtension{
-					Raw: objJSON,
-				},
-			}
+			testRunName := fmt.Sprintf("%s_%s", tc.name, objType)
+			t.Run(testRunName, func(t *testing.T) {
 
-			response := validateAdmissionReview(settings, admissionRequest)
-			if response.Accepted != tc.isAccepted {
-				t.Errorf(
-					"[%s/%s] didn't get the expected validation outcome, %v was expected, got %v instead",
-					tc.desc, objType, tc.isAccepted, response.Accepted)
-				if response.Message != nil {
-					t.Errorf(
-						"[%s/%s] policy message: %s",
-						tc.desc, objType, *response.Message)
+				admissionRequest := admissionv1.AdmissionRequest{
+					Object: runtime.RawExtension{
+						Raw: objJSON,
+					},
 				}
-			}
-			if response.MutatedObject == nil && tc.isMutated {
-				t.Errorf("[%s/%s] object has not been mutated", tc.desc, objType)
-			}
-			if response.MutatedObject != nil && !tc.isMutated {
-				t.Errorf("[%s/%s] object should not have been mutated", tc.desc, objType)
-			}
+
+				response := validateAdmissionReview(settings, admissionRequest)
+				if response.Accepted != tc.isAccepted {
+					t.Errorf(
+						"didn't get the expected validation outcome, %v was expected, got %v instead",
+						tc.isAccepted, response.Accepted)
+					if response.Message != nil {
+						t.Errorf(
+							"policy message: %s",
+							*response.Message)
+					}
+				}
+				if response.MutatedObject == nil && tc.isMutated {
+					t.Errorf("object has not been mutated")
+				}
+				if response.MutatedObject != nil && !tc.isMutated {
+					t.Errorf("object should not have been mutated")
+				}
+			})
 		}
 	}
 }

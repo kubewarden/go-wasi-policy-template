@@ -9,7 +9,7 @@ import (
 
 func TestValidateSettings(t *testing.T) {
 	cases := []struct {
-		desc                 string
+		name                 string
 		requiredAnnotations  map[string]string
 		forbiddenAnnotations mapset.Set[string]
 		isValid              bool
@@ -53,31 +53,33 @@ func TestValidateSettings(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		settings := Settings{
-			RequiredAnnotations:  tc.requiredAnnotations,
-			ForbiddenAnnotations: tc.forbiddenAnnotations,
-		}
-		settingsJSON, err := json.Marshal(&settings)
-		if err != nil {
-			t.Errorf("[%s] cannot marshal settings: %v", tc.desc, err)
-		}
-
-		responseJSON := validateSettings(settingsJSON)
-		var response SettingsValidationResponse
-		err = json.Unmarshal(responseJSON, &response)
-		if err != nil {
-			t.Errorf("[%s] cannot unmarshal response: %v", tc.desc, err)
-		}
-
-		if response.Valid != tc.isValid {
-			t.Errorf(
-				"[%s] didn't get the expected validation outcome, %v was expected, got %v instead",
-				tc.desc, tc.isValid, response.Valid)
-			if response.Message != nil {
-				t.Errorf(
-					"[%s] validation message: %s",
-					tc.desc, *response.Message)
+		t.Run(tc.name, func(t *testing.T) {
+			settings := Settings{
+				RequiredAnnotations:  tc.requiredAnnotations,
+				ForbiddenAnnotations: tc.forbiddenAnnotations,
 			}
-		}
+			settingsJSON, err := json.Marshal(&settings)
+			if err != nil {
+				t.Errorf("cannot marshal settings: %v", err)
+			}
+
+			responseJSON := validateSettings(settingsJSON)
+			var response SettingsValidationResponse
+			err = json.Unmarshal(responseJSON, &response)
+			if err != nil {
+				t.Errorf("cannot unmarshal response: %v", err)
+			}
+
+			if response.Valid != tc.isValid {
+				t.Errorf(
+					"didn't get the expected validation outcome, %v was expected, got %v instead",
+					tc.isValid, response.Valid)
+				if response.Message != nil {
+					t.Errorf(
+						"validation message: %s",
+						*response.Message)
+				}
+			}
+		})
 	}
 }
