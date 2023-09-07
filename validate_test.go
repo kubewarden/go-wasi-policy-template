@@ -70,21 +70,20 @@ func TestValidateAdmissionReview(t *testing.T) {
 		},
 	}
 
-	for _, tc := range cases {
+	for _, testCase := range cases {
 		settings := Settings{
-			RequiredAnnotations:  tc.requiredAnnotations,
-			ForbiddenAnnotations: tc.forbiddenAnnotations,
+			RequiredAnnotations:  testCase.requiredAnnotations,
+			ForbiddenAnnotations: testCase.forbiddenAnnotations,
 		}
 
 		jsonObjects := map[string][]byte{
-			"namespace": buildNamespaceJSON(tc.currentAnnotations),
-			"service":   buildServiceJSON(tc.currentAnnotations),
+			"namespace": buildNamespaceJSON(testCase.currentAnnotations),
+			"service":   buildServiceJSON(testCase.currentAnnotations),
 		}
 
 		for objType, objJSON := range jsonObjects {
-			testRunName := fmt.Sprintf("%s_%s", tc.name, objType)
+			testRunName := fmt.Sprintf("%s_%s", testCase.name, objType)
 			t.Run(testRunName, func(t *testing.T) {
-
 				admissionRequest := admissionv1.AdmissionRequest{
 					Object: runtime.RawExtension{
 						Raw: objJSON,
@@ -92,20 +91,20 @@ func TestValidateAdmissionReview(t *testing.T) {
 				}
 
 				response := validateAdmissionReview(settings, admissionRequest)
-				if response.Accepted != tc.isAccepted {
+				if response.Accepted != testCase.isAccepted {
 					t.Errorf(
 						"didn't get the expected validation outcome, %v was expected, got %v instead",
-						tc.isAccepted, response.Accepted)
+						testCase.isAccepted, response.Accepted)
 					if response.Message != nil {
 						t.Errorf(
 							"policy message: %s",
 							*response.Message)
 					}
 				}
-				if response.MutatedObject == nil && tc.isMutated {
+				if response.MutatedObject == nil && testCase.isMutated {
 					t.Errorf("object has not been mutated")
 				}
-				if response.MutatedObject != nil && !tc.isMutated {
+				if response.MutatedObject != nil && !testCase.isMutated {
 					t.Errorf("object should not have been mutated")
 				}
 			})

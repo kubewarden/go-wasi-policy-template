@@ -52,11 +52,11 @@ func TestValidateSettings(t *testing.T) {
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
 			settings := Settings{
-				RequiredAnnotations:  tc.requiredAnnotations,
-				ForbiddenAnnotations: tc.forbiddenAnnotations,
+				RequiredAnnotations:  testCase.requiredAnnotations,
+				ForbiddenAnnotations: testCase.forbiddenAnnotations,
 			}
 			settingsJSON, err := json.Marshal(&settings)
 			if err != nil {
@@ -70,10 +70,10 @@ func TestValidateSettings(t *testing.T) {
 				t.Errorf("cannot unmarshal response: %v", err)
 			}
 
-			if response.Valid != tc.isValid {
+			if response.Valid != testCase.isValid {
 				t.Errorf(
 					"didn't get the expected validation outcome, %v was expected, got %v instead",
-					tc.isValid, response.Valid)
+					testCase.isValid, response.Valid)
 				if response.Message != nil {
 					t.Errorf(
 						"validation message: %s",

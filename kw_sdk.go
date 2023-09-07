@@ -1,5 +1,6 @@
 package main
 
+//nolint:godox
 // TODO: figure out if it's worth to move this to a dedicated library
 // We cannot add that to the Kubewarden Go SDK because it would not work
 // with TinyGo
@@ -35,6 +36,8 @@ const (
 )
 
 // ValidationResponse defines the response given when validating a request
+//
+//nolint:tagliatelle
 type ValidationResponse struct {
 	Accepted bool `json:"accepted"`
 	// Optional - ignored if accepted
