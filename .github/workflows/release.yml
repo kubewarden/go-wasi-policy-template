@@ -8,8 +8,13 @@ on:
 name: Release policy
 
 jobs:
+  test:
+    name: run tests and linters
+    uses: kubewarden/github-actions/.github/workflows/reusable-test-policy-go.yml@v3.1.9
+
   release:
     runs-on: ubuntu-latest
+    needs: test
 
     permissions:
       # Required to create GH releases
