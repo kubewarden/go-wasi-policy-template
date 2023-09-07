@@ -1,9 +1,6 @@
 module github.com/kubewarden/go-wasi-policy-template
 
-go 1.20
-
-// TODO: replace with the next release of logrus
-replace github.com/sirupsen/logrus => github.com/flavio/logrus v1.9.2-wasip1
+go 1.21
 
 require (
 	github.com/deckarep/golang-set/v2 v2.3.0
