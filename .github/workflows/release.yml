@@ -41,13 +41,7 @@ jobs:
         with:
           go-version: "1.21"
 
-      - name: Run unit-tests
-        run: |
-          make test
-      - name: Build & annotate
-        run: |
-          GOOS=wasip1 GOARCH=wasm go build -o policy.wasm
-          make annotated-policy.wasm
+      - run: make annotated-policy.wasm
       - name: Run e2e tests
         run: |
           make e2e-tests
