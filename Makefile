@@ -1,7 +1,4 @@
 SOURCE_FILES := $(shell find . -type f -name '*.go')
-
-# It's necessary to call cut because kwctl command does not handle version
-# starting with v.
 VERSION ?= $(shell git describe | cut -c2-)
 
 
@@ -17,7 +14,7 @@ artifacthub-pkg.yml: metadata.yml go.mod
 	  --metadata-path metadata.yml --version $(VERSION) \
 	  --output artifacthub-pkg.yml
 
-annotated-policy.wasm: policy.wasm metadata.yml artifacthub-pkg.yml
+annotated-policy.wasm: policy.wasm metadata.yml
 	kwctl annotate -m metadata.yml -u README.md -o annotated-policy.wasm policy.wasm
 
 .PHONY: lint
