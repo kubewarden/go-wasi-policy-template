@@ -28,7 +28,7 @@ jobs:
         with:
           bats-version: 1.5.0
       - name: Install experiemental kwctl
-        uses: kubewarden/github-actions/kwctl-installer@v3.1.9
+        uses: kubewarden/github-actions/kwctl-installer@v3.1.10
         with:
           KWCTL_VERSION: v1.7.0-rc1
       - run: make e2e-tests
