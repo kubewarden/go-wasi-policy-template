@@ -4,8 +4,8 @@ go 1.21
 
 require (
 	github.com/deckarep/golang-set/v2 v2.3.1
-	k8s.io/api v0.28.3
-	k8s.io/apimachinery v0.28.3
+	k8s.io/api v0.28.4
+	k8s.io/apimachinery v0.28.4
 )
 
 require (
