@@ -1,5 +1,13 @@
+# Binary directory
+ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+BIN_DIR := $(abspath $(ROOT_DIR)/bin)
+
 SOURCE_FILES := $(shell find . -type f -name '*.go')
 VERSION ?= $(shell git describe | cut -c2-)
+
+GOLANGCI_LINT_VER := v1.55.2
+GOLANGCI_LINT_BIN := golangci-lint
+GOLANGCI_LINT := $(BIN_DIR)/$(GOLANGCI_LINT_BIN)
 
 
 policy.wasm: $(SOURCE_FILES) go.mod go.sum
@@ -17,10 +25,14 @@ artifacthub-pkg.yml: metadata.yml go.mod
 annotated-policy.wasm: policy.wasm metadata.yml
 	kwctl annotate -m metadata.yml -u README.md -o annotated-policy.wasm policy.wasm
 
+golangci-lint: $(GOLANGCI_LINT) ## Install a local copy of golang ci-lint.
+$(GOLANGCI_LINT): ## Install golangci-lint.
+	GOBIN=$(BIN_DIR) go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VER)
+
 .PHONY: lint
-lint:
+lint: $(GOLANGCI_LINT)
 	go vet ./...
-	golangci-lint run
+	$(GOLANGCI_LINT) run
 
 .PHONY: test
 test:
