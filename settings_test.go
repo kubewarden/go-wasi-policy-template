@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	mapset "github.com/deckarep/golang-set/v2"
+	kubewardenProtocol "github.com/kubewarden/policy-sdk-go/protocol"
 )
 
 func TestValidateSettings(t *testing.T) {
@@ -63,8 +64,11 @@ func TestValidateSettings(t *testing.T) {
 				t.Errorf("cannot marshal settings: %v", err)
 			}
 
-			responseJSON := validateSettings(settingsJSON)
-			var response SettingsValidationResponse
+			responseJSON, err := validateSettings(settingsJSON)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+			var response kubewardenProtocol.SettingsValidationResponse
 			err = json.Unmarshal(responseJSON, &response)
 			if err != nil {
 				t.Errorf("cannot unmarshal response: %v", err)

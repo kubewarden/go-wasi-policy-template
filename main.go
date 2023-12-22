@@ -20,11 +20,15 @@ func main() {
 
 	switch os.Args[1] {
 	case "validate":
-		response = validate(input)
+		response, err = validate(input)
 	case "validate-settings":
-		response = validateSettings(input)
+		response, err = validateSettings(input)
 	default:
 		log.Fatalf("wrong subcommand: '%s' - use either 'validate' or 'validate-settings'", os.Args[1])
+	}
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	_, err = os.Stdout.Write(response)
