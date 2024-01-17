@@ -3,63 +3,42 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	mapset "github.com/deckarep/golang-set/v2"
-	admissionv1 "k8s.io/api/admission/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	corev1 "github.com/kubewarden/k8s-objects/api/core/v1"
+	kubewarden "github.com/kubewarden/policy-sdk-go"
+	kubewardenProtocol "github.com/kubewarden/policy-sdk-go/protocol"
 )
 
-func validate(input []byte) []byte {
-	var validationRequest ValidationRequest
+func validate(input []byte) ([]byte, error) {
+	validationRequest := kubewardenProtocol.ValidationRequest{}
 
 	err := json.Unmarshal(input, &validationRequest)
 	if err != nil {
-		return marshalValidationResponseOrFail(
-			RejectRequest(
-				Message(fmt.Sprintf("Error deserializing validation request: %v", err)),
-				Code(400)))
+		return kubewarden.RejectRequest(
+			kubewarden.Message(fmt.Sprintf("Error deserializing validation request: %v", err)),
+			kubewarden.Code(400))
 	}
-	settingsJSON, err := validationRequest.SettingsRaw.MarshalJSON()
+	settings, err := NewSettingsFromValidationReq(&validationRequest)
 	if err != nil {
-		return marshalValidationResponseOrFail(
-			RejectRequest(
-				Message(fmt.Sprintf("Error serializing RawMessage: %v", err)),
-				Code(400)))
-	}
-	settings := Settings{
-		// required to allow marshal
-		ForbiddenAnnotations: mapset.NewSet[string](),
-	}
-	if err := json.Unmarshal(settingsJSON, &settings); err != nil {
-		return marshalValidationResponseOrFail(
-			RejectRequest(
-				Message(fmt.Sprintf("Error deserializing Settings: %v", err)),
-				Code(400)))
+		return kubewarden.RejectRequest(
+			kubewarden.Message(fmt.Sprintf("Error serializing RawMessage: %v", err)),
+			kubewarden.Code(400))
 	}
 
-	return marshalValidationResponseOrFail(
-		validateAdmissionReview(settings, validationRequest.Request))
+	return validateAdmissionReview(settings, validationRequest.Request)
 }
 
-func marshalValidationResponseOrFail(response ValidationResponse) []byte {
-	responseBytes, err := json.Marshal(&response)
+func validateAdmissionReview(policySettings Settings, request kubewardenProtocol.KubernetesAdmissionRequest) ([]byte, error) {
+	pod := corev1.Pod{}
+	err := json.Unmarshal(request.Object, &pod)
 	if err != nil {
-		log.Fatalf("cannot marshal validation response: %v", err)
-	}
-	return responseBytes
-}
-
-func validateAdmissionReview(policySettings Settings, request admissionv1.AdmissionRequest) ValidationResponse {
-	obj := unstructured.Unstructured{}
-	err := json.Unmarshal(request.Object.Raw, &obj)
-	if err != nil {
-		return RejectRequest(
-			Message(fmt.Sprintf("Error deserializing request object into unstructured: %v", err)),
-			Code(400))
+		return kubewarden.RejectRequest(
+			kubewarden.Message(fmt.Sprintf("Error deserializing request object into unstructured: %v", err)),
+			kubewarden.Code(400))
 	}
 
-	annotations := obj.GetAnnotations()
+	annotations := pod.Metadata.Annotations
 	if annotations == nil {
 		annotations = make(map[string]string)
 	}
@@ -71,9 +50,9 @@ func validateAdmissionReview(policySettings Settings, request admissionv1.Admiss
 	}
 	forbiddenAnnotations := annotationsSet.Intersect(policySettings.ForbiddenAnnotations)
 	if forbiddenAnnotations.Cardinality() > 0 {
-		return RejectRequest(
-			Message(fmt.Sprintf("The following annotations are forbidden: %s", forbiddenAnnotations.String())),
-			Code(400))
+		return kubewarden.RejectRequest(
+			kubewarden.Message(fmt.Sprintf("The following annotations are forbidden: %s", forbiddenAnnotations.String())),
+			kubewarden.Code(400))
 	}
 
 	// eventually mutate the current annotations
@@ -87,9 +66,9 @@ func validateAdmissionReview(policySettings Settings, request admissionv1.Admiss
 	}
 
 	if annotationsChanged {
-		obj.SetAnnotations(annotations)
-		return MutateRequest(&obj)
+		pod.Metadata.Annotations = annotations
+		return kubewarden.MutateRequest(&pod)
 	}
 
-	return AcceptRequest()
+	return kubewarden.AcceptRequest()
 }

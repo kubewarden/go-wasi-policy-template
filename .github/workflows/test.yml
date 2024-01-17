@@ -27,8 +27,10 @@ jobs:
         uses: mig4/setup-bats@v1.2.0
         with:
           bats-version: 1.5.0
+      - name: Install dependencies
+        uses: kubewarden/github-actions/policy-gh-action-dependencies@v3.1.14
       - name: Install kwctl
-        uses: kubewarden/github-actions/kwctl-installer@v3.1.12
+        uses: kubewarden/github-actions/kwctl-installer@v3.1.13
       - run: make e2e-tests
 
   golangci:

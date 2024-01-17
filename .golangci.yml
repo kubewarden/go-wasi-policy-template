@@ -29,11 +29,13 @@ linters:
     - golint
     - gofumpt
     - gomnd
+    - gomoddirectives
     - maligned
     - nlreturn
     - paralleltest
     - scopelint
     - testpackage
+    - wrapcheck
     - wsl
     - lll # long lines
     # https://github.com/golangci/golangci-lint/issues/541
