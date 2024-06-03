@@ -1,3 +1,5 @@
+[![Stable](https://img.shields.io/badge/status-stable-brightgreen?style=for-the-badge)](https://github.com/kubewarden/community/blob/main/REPOSITORIES.md#stable)
+
 > **WARNING:** this is not the recommended way to write Kubewarden
 > policies using Go. Please read [this](https://docs.kubewarden.io/writing-policies/wasi)
 > section of the Kubewarden documentation for more information.
