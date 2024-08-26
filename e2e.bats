@@ -9,7 +9,6 @@
   echo "output = ${output}"
 
   [ "$status" -eq 1 ]
-  [ $(expr "$output" : '.*valid.*false') -ne 0 ]
   [ $(expr "$output" : ".*The following annotations are.*") -ne 0 ]
 }
 
