@@ -10,6 +10,8 @@ import (
 	kubewardenProtocol "github.com/kubewarden/policy-sdk-go/protocol"
 )
 
+const httpBadRequestStatusCode = 400
+
 func validate(input []byte) ([]byte, error) {
 	validationRequest := kubewardenProtocol.ValidationRequest{}
 
@@ -17,13 +19,13 @@ func validate(input []byte) ([]byte, error) {
 	if err != nil {
 		return kubewarden.RejectRequest(
 			kubewarden.Message(fmt.Sprintf("Error deserializing validation request: %v", err)),
-			kubewarden.Code(400))
+			kubewarden.Code(httpBadRequestStatusCode))
 	}
 	settings, err := NewSettingsFromValidationReq(&validationRequest)
 	if err != nil {
 		return kubewarden.RejectRequest(
 			kubewarden.Message(fmt.Sprintf("Error serializing RawMessage: %v", err)),
-			kubewarden.Code(400))
+			kubewarden.Code(httpBadRequestStatusCode))
 	}
 
 	return validateAdmissionReview(settings, validationRequest.Request)
@@ -35,7 +37,7 @@ func validateAdmissionReview(policySettings Settings, request kubewardenProtocol
 	if err != nil {
 		return kubewarden.RejectRequest(
 			kubewarden.Message(fmt.Sprintf("Error deserializing request object into unstructured: %v", err)),
-			kubewarden.Code(400))
+			kubewarden.Code(httpBadRequestStatusCode))
 	}
 
 	annotations := pod.Metadata.Annotations
@@ -51,8 +53,8 @@ func validateAdmissionReview(policySettings Settings, request kubewardenProtocol
 	forbiddenAnnotations := annotationsSet.Intersect(policySettings.ForbiddenAnnotations)
 	if forbiddenAnnotations.Cardinality() > 0 {
 		return kubewarden.RejectRequest(
-			kubewarden.Message(fmt.Sprintf("The following annotations are forbidden: %s", forbiddenAnnotations.String())),
-			kubewarden.Code(400))
+			kubewarden.Message("The following annotations are forbidden: "+forbiddenAnnotations.String()),
+			kubewarden.Code(httpBadRequestStatusCode))
 	}
 
 	// eventually mutate the current annotations

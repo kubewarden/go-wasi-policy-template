@@ -12,6 +12,7 @@ func main() {
 	// be bubbled up to the message of the response returned to the caller.
 	log.SetFlags(0)
 
+	//nolint:mnd
 	if len(os.Args) != 2 {
 		log.Fatalln("Wrong usage, expected either 'validate' or `validate-settings'")
 	}
