@@ -1,13 +1,14 @@
 rules:
-- apiGroups: [""]
-  apiVersions: ["v1"]
-  resources: ["*"]
-  operations: ["CREATE", "UPDATE"]
+  - apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["*"]
+    operations: ["CREATE", "UPDATE"]
 mutating: false
 contextAware: false
 executionMode: wasi
 annotations:
   io.kubewarden.policy.title: annotation-validator
+  io.kubewarden.policy.version: 0.0.1-unreleased
   io.artifacthub.displayName: Annotation validator
   io.artifacthub.resources: Any
   io.artifacthub.keywords: compliance
