@@ -87,7 +87,8 @@ func TestValidateAdmissionReview(t *testing.T) {
 			}
 
 			response := kubewardenProtocol.ValidationResponse{}
-			if err = json.Unmarshal(responseJSON, &response); err != nil {
+			err = json.Unmarshal(responseJSON, &response)
+			if err != nil {
 				t.Errorf("cannot unmarshal validation response: %v", err)
 			}
 
