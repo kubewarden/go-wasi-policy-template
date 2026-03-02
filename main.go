@@ -30,7 +30,7 @@ func main() {
 	case "validate-settings":
 		response, err = validateSettings(input)
 	default:
-		log.Fatalf("wrong subcommand: '%s' - use either 'validate' or 'validate-settings'", os.Args[1])
+		log.Fatalf("wrong subcommand, expected either 'validate' or 'validate-settings'")
 	}
 
 	if err != nil {
