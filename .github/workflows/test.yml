@@ -3,4 +3,4 @@ name: Continuous integration
 jobs:
   test:
     name: run tests and linters
-    uses: kubewarden/github-actions/.github/workflows/reusable-test-policy-go-wasi.yml@a1c3c24660e1a2f945efdadc6306ea3e83ddfed8 # v5.0.2
+    uses: kubewarden/github-actions/.github/workflows/reusable-test-policy-go-wasi.yml@e57db07ca384bf09ec40c4c49ff25d600c0d23d9 # v5.1.1

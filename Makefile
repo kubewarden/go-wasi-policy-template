@@ -11,7 +11,7 @@ GOLANGCI_LINT := $(BIN_DIR)/$(GOLANGCI_LINT_BIN)
 
 policy.wasm: $(SOURCE_FILES) go.mod go.sum
 	GOOS=wasip1 GOARCH=wasm go build -gcflags=all="-B" -ldflags="-w -s" -o policy.wasm
-	wasm-opt --enable-bulk-memory -Oz -o policy.wasm policy.wasm 
+	wasm-opt --enable-bulk-memory --enable-nontrapping-float-to-int -Oz -o policy.wasm policy.wasm 
 
 annotated-policy.wasm: policy.wasm metadata.yml
 	kwctl annotate -m metadata.yml -u README.md -o annotated-policy.wasm policy.wasm
