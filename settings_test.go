@@ -24,7 +24,7 @@ func TestValidateSettings(t *testing.T) {
 		{
 			"only required annotations",
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-1": "accounts-payable",
 			},
 			mapset.NewSet[string](),
 			true,
@@ -32,23 +32,23 @@ func TestValidateSettings(t *testing.T) {
 		{
 			"only forbidden annotations",
 			map[string]string{},
-			mapset.NewSet[string]("priority"),
+			mapset.NewSet("priority"),
 			true,
 		},
 		{
 			"no contradictions",
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-2": "procurement",
 			},
-			mapset.NewSet[string]("priority"),
+			mapset.NewSet("priority"),
 			true,
 		},
 		{
 			"contradictions",
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-3": "procurement",
 			},
-			mapset.NewSet[string]("cc-center"),
+			mapset.NewSet("cc-center-3"),
 			false,
 		},
 	}
