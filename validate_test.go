@@ -23,10 +23,10 @@ func TestValidateAdmissionReview(t *testing.T) {
 		{
 			"object has already the required annotations",
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-4": "marketing",
 			},
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-4": "marketing",
 			},
 			mapset.NewSet[string](),
 			true,
@@ -35,12 +35,12 @@ func TestValidateAdmissionReview(t *testing.T) {
 		{
 			"object has a forbidden annotation",
 			map[string]string{
-				"team": "marketing",
+				"team": "it",
 			},
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-5": "it",
 			},
-			mapset.NewSet[string]("team"),
+			mapset.NewSet("team"),
 			false,
 			false,
 		},
@@ -48,21 +48,21 @@ func TestValidateAdmissionReview(t *testing.T) {
 			"mutate object - add key",
 			map[string]string{},
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-5": "asset-mgmt",
 			},
-			mapset.NewSet[string]("team"),
+			mapset.NewSet("team"),
 			true,
 			true,
 		},
 		{
 			"mutate object - update key",
 			map[string]string{
-				"cc-center": "foo",
+				"cc-center-6": "foo",
 			},
 			map[string]string{
-				"cc-center": "marketing",
+				"cc-center-6": "asset-mgmt",
 			},
-			mapset.NewSet[string]("team"),
+			mapset.NewSet("team"),
 			true,
 			true,
 		},
