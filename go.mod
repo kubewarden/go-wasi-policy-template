@@ -15,5 +15,5 @@ replace github.com/go-openapi/strfmt => github.com/kubewarden/strfmt v0.1.3
 require (
 	github.com/go-openapi/strfmt v0.21.3 // indirect
 	github.com/wapc/wapc-guest-tinygo v0.3.3 // indirect
-	go.mongodb.org/mongo-driver v1.17.4 // indirect
+	go.mongodb.org/mongo-driver v1.17.7 // indirect
 )
