@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	mapset "github.com/deckarep/golang-set/v2"
+	mapset "github.com/deckarep/golang-set/v3"
 	corev1 "github.com/kubewarden/k8s-objects/api/core/v1"
 	kubewarden "github.com/kubewarden/policy-sdk-go"
 	kubewardenProtocol "github.com/kubewarden/policy-sdk-go/protocol"
